@@ -20,7 +20,7 @@
 /* Display Time in nanoseconds */
 #define OSD_TIMEOUT 999999999    
 /* Key repeat delay in nanoseconds */
-#define KEY_DELAY 5000000
+#define KEY_DELAY 20000000
 #define BILLION 1000000000
 #define OSD_FONT "-adobe-helvetica-*-r-*-*-24-*-*-*-*-*-*-*"
 #define OSD_COLOUR "DarkGoldenrod1"
