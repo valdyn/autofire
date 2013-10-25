@@ -20,7 +20,8 @@
 /* Display Time in nanoseconds */
 #define OSD_TIMEOUT 999999999    
 /* Key repeat delay in nanoseconds */
-#define KEY_DELAY 20000000
+#define KEY_DELAY (BILLION/50)
+#define SLEEP_DELAY (BILLION/5)
 #define BILLION 1000000000
 #define OSD_FONT "-adobe-helvetica-*-r-*-*-24-*-*-*-*-*-*-*"
 #define OSD_COLOUR "DarkGoldenrod1"
@@ -152,15 +153,16 @@ int main (int argc, char *argv[])
   int keycode_3 = XKeysymToKeycode(display, XStringToKeysym("3"));
   int keycode_4 = XKeysymToKeycode(display, XStringToKeysym("4"));
 
-  static struct timespec ts = { 0, KEY_DELAY };
+  static struct timespec key_delay = { 0, KEY_DELAY };
+  static struct timespec sleep_delay = { 0, SLEEP_DELAY };
 
   if (get_xdevice(name))
     {
 	  printf("Spamming: Off - Use F12 to toggle.\n");
       while(1)
         {
-          while (!(get_toggle())) { nanosleep(&ts,NULL); }
-          nanosleep(&ts,NULL);
+          while (!(get_toggle())) { nanosleep(&sleep_delay,NULL); }
+          nanosleep(&key_delay,NULL);
           if (get_key_state(keycode_1)) {
             send_key(keycode_1);
             send_button(3);
