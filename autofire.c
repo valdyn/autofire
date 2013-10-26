@@ -115,7 +115,7 @@ int get_toggle() {
     XMaskEvent(display,KeyPressMask,&e);
     if (((XKeyEvent*) &e)->keycode == XKeysymToKeycode(display, XStringToKeysym("F12"))) {
       xosd* osd = osd_init();
-      xosd_display(osd,0,XOSD_string,"Spamming: On\n");
+      xosd_display(osd,0,XOSD_string,"Spamming: On");
       printf("Spamming: On\n");
       nanosleep(&ts,NULL);
       xosd_destroy(osd);
