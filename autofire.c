@@ -24,7 +24,7 @@
 #define BILLION 1000000000
 #define OSD_FONT "-adobe-helvetica-*-r-*-*-24-*-*-*-*-*-*-*"
 #define OSD_COLOUR "DarkGoldenrod1"
-#define OSD_OUTLINE_OFFSET "2"
+#define OSD_OUTLINE_OFFSET 2
 
 Display *display;
 XDevice *xdevice = NULL;
