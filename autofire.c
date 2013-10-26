@@ -113,10 +113,11 @@ int get_toggle() {
   static int toggle = False;
   XEvent e;
   if (!toggle) {
-    while (XCheckMaskEvent(display,KeyPressMask,&e));
+    XMaskEvent(display,KeyPressMask,&e);
     if (((XKeyEvent*) &e)->keycode == XKeysymToKeycode(display, XStringToKeysym("F12"))) {
       osd_print("Spamming: On");
       printf("Spamming: On\n");
+      while (XCheckMaskEvent(display,KeyPressMask,&e));
       toggle = !toggle; 
     }
   } else
@@ -124,6 +125,7 @@ int get_toggle() {
     if (((XKeyEvent*) &e)->keycode == XKeysymToKeycode(display, XStringToKeysym("F12"))) {
       osd_print("Spamming: Off");
       printf("Spamming: Off\n");
+      while (XCheckMaskEvent(display,KeyPressMask,&e));
       toggle = !toggle;
     }
   }
