@@ -18,7 +18,7 @@
 #include <xosd.h>
 
 /* Display Time in nanoseconds */
-#define OSD_TIMEOUT 999999999    
+#define OSD_TIMEOUT (BILLION/2)    
 /* Key repeat delay in nanoseconds */
 #define KEY_DELAY (BILLION/50)
 #define BILLION 1000000000
@@ -104,7 +104,6 @@ void *osd_print(char* text) {
   xosd_set_font(osd,OSD_FONT);
   xosd_set_outline_offset(osd,2 );
   xosd_set_colour(osd, OSD_COLOUR);
-  xosd_set_timeout(osd,5);
   xosd_display(osd,0,XOSD_string,text);
   nanosleep(&ts,NULL);
   xosd_destroy(osd);
@@ -114,7 +113,6 @@ int get_toggle() {
   static int toggle = False;
   XEvent e;
   if (!toggle) {
-    XCheckMaskEvent(display,KeyPressMask,&e);
     XMaskEvent(display,KeyPressMask,&e);
     if (((XKeyEvent*) &e)->keycode == XKeysymToKeycode(display, XStringToKeysym("F12"))) {
       osd_print("Spamming: On");
@@ -122,10 +120,12 @@ int get_toggle() {
       toggle = !toggle; 
     }
   } else
-  if (get_key_state (XKeysymToKeycode(display, XStringToKeysym("F12")))) {
-    osd_print("Spamming: Off");
-    printf("Spamming: Off\n");
-    toggle = !toggle;
+  if (XCheckMaskEvent(display,KeyPressMask,&e))  {
+    if (((XKeyEvent*) &e)->keycode == XKeysymToKeycode(display, XStringToKeysym("F12"))) {
+      osd_print("Spamming: Off");
+      printf("Spamming: Off\n");
+      toggle = !toggle;
+    }
   }
   return toggle;
 }
