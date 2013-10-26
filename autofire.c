@@ -141,10 +141,7 @@ int main (int argc, char *argv[])
 
   int keycode = XKeysymToKeycode(display, XK_F12);
   Window grab_window = DefaultRootWindow(display);
-  XGrabKey(display,keycode,       0,grab_window,False,GrabModeAsync,GrabModeAsync);
-  XGrabKey(display,keycode,Mod2Mask,grab_window,False,GrabModeAsync,GrabModeAsync);
-  XGrabKey(display,keycode,LockMask,grab_window,False,GrabModeAsync,GrabModeAsync);
-  XGrabKey(display,keycode,Mod2Mask | LockMask,grab_window,False,GrabModeAsync,GrabModeAsync);
+  XGrabKey(display,keycode,AnyModifier,grab_window,False,GrabModeAsync,GrabModeAsync);
   
   char* name = argv[1];
 
