@@ -21,7 +21,6 @@
 #define OSD_TIMEOUT 999999999    
 /* Key repeat delay in nanoseconds */
 #define KEY_DELAY (BILLION/50)
-#define SLEEP_DELAY (BILLION/5)
 #define BILLION 1000000000
 #define OSD_FONT "-adobe-helvetica-*-r-*-*-24-*-*-*-*-*-*-*"
 #define OSD_COLOUR "DarkGoldenrod1"
@@ -108,17 +107,28 @@ xosd *osd_init() {
 }
 
 int get_toggle() {
-  static int toggle = 0;
+  static int toggle = False;
   static struct timespec ts = { OSD_TIMEOUT / BILLION, OSD_TIMEOUT % BILLION };
+  XEvent e;
+  if (!toggle) {
+    XCheckMaskEvent(display,KeyPressMask,&e);
+    XMaskEvent(display,KeyPressMask,&e);
+    if (((XKeyEvent*) &e)->keycode == XKeysymToKeycode(display, XStringToKeysym("F12"))) {
+      xosd* osd = osd_init();
+      xosd_display(osd,0,XOSD_string,"Spamming: On\n");
+      printf("Spamming: On\n");
+      nanosleep(&ts,NULL);
+      xosd_destroy(osd);
+      toggle = !toggle; 
+    }
+  } else
   if (get_key_state (XKeysymToKeycode(display, XStringToKeysym("F12")))) {
     xosd* osd = osd_init();
-    char text[20] = "Spamming : ";
-    strcat(text,(toggle == True)?"Off":"On");
-    xosd_display(osd,0,XOSD_string,text);
-    printf("Spamming: %s\n",(toggle == True)?"Off":"On");
+    xosd_display(osd,0,XOSD_string,"Spamming: Off");
+    printf("Spamming: Off\n");
     nanosleep(&ts,NULL);
     xosd_destroy(osd);
-    return(toggle = !toggle);
+    toggle = !toggle;
   }
   return toggle;
 }
@@ -151,14 +161,13 @@ int main (int argc, char *argv[])
   int keycode_4 = XKeysymToKeycode(display, XStringToKeysym("4"));
 
   static struct timespec key_delay = { 0, KEY_DELAY };
-  static struct timespec sleep_delay = { 0, SLEEP_DELAY };
 
   if (get_xdevice(name))
     {
 	  printf("Spamming: Off - Use F12 to toggle.\n");
       while(1)
         {
-          while (!(get_toggle())) { nanosleep(&sleep_delay,NULL); }
+          get_toggle();
           nanosleep(&key_delay,NULL);
           if (get_key_state(keycode_1)) {
             send_key(keycode_1);
