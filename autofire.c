@@ -52,7 +52,7 @@ int get_xdevice (char* name)
               (int) devs[i].id, (int) devs[i].type, devs[i].name);
 
       if ((strncasecmp(devs[i].name, name, strlen(name)) == 0) &&
-		  (devs[i].type == XInternAtom(display,XI_KEYBOARD, True)))
+		  ((devs[i].use == IsXKeyboard) || (devs[i].use == IsXExtensionKeyboard)))
         {
           printf("Opening XID %d \"%s\"\n", (int) devs[i].id, devs[i].name);
 		  xdevice = XOpenDevice(display, devs[i].id);
