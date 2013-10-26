@@ -90,7 +90,8 @@ void send_button(int button) {
   XFlush(display);
 }
 
-xosd *osd_init() {
+void *osd_print(char* text) {
+  static struct timespec ts = { OSD_TIMEOUT / BILLION, OSD_TIMEOUT % BILLION };
   xosd *osd = NULL;
   osd = xosd_create(2);
   if (osd == NULL)
@@ -103,31 +104,27 @@ xosd *osd_init() {
   xosd_set_font(osd,OSD_FONT);
   xosd_set_outline_offset(osd,2 );
   xosd_set_colour(osd, OSD_COLOUR);
-  return(osd);
+  xosd_set_timeout(osd,5);
+  xosd_display(osd,0,XOSD_string,text);
+  nanosleep(&ts,NULL);
+  xosd_destroy(osd);
 }
 
 int get_toggle() {
   static int toggle = False;
-  static struct timespec ts = { OSD_TIMEOUT / BILLION, OSD_TIMEOUT % BILLION };
   XEvent e;
   if (!toggle) {
     XCheckMaskEvent(display,KeyPressMask,&e);
     XMaskEvent(display,KeyPressMask,&e);
     if (((XKeyEvent*) &e)->keycode == XKeysymToKeycode(display, XStringToKeysym("F12"))) {
-      xosd* osd = osd_init();
-      xosd_display(osd,0,XOSD_string,"Spamming: On");
+      osd_print("Spamming: On");
       printf("Spamming: On\n");
-      nanosleep(&ts,NULL);
-      xosd_destroy(osd);
       toggle = !toggle; 
     }
   } else
   if (get_key_state (XKeysymToKeycode(display, XStringToKeysym("F12")))) {
-    xosd* osd = osd_init();
-    xosd_display(osd,0,XOSD_string,"Spamming: Off");
+    osd_print("Spamming: Off");
     printf("Spamming: Off\n");
-    nanosleep(&ts,NULL);
-    xosd_destroy(osd);
     toggle = !toggle;
   }
   return toggle;
