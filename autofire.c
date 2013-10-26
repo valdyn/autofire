@@ -3,7 +3,7 @@
 
    Usage: autofire <DeviceName>
    
-          DeviceName: Name of the input device (as set in xorg.conf)
+          DeviceName: Name of the input keyboard device (as listed in xinput)
 */
 
 #include <stdio.h>
