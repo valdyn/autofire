@@ -24,6 +24,7 @@
 #define BILLION 1000000000
 #define OSD_FONT "-adobe-helvetica-*-r-*-*-24-*-*-*-*-*-*-*"
 #define OSD_COLOUR "DarkGoldenrod1"
+#define OSD_OUTLINE_OFFSET "2"
 
 Display *display;
 XDevice *xdevice = NULL;
@@ -102,7 +103,7 @@ void *osd_print(char* text) {
   xosd_set_align(osd, XOSD_center);
   xosd_set_pos(osd, XOSD_middle);
   xosd_set_font(osd,OSD_FONT);
-  xosd_set_outline_offset(osd,2 );
+  xosd_set_outline_offset(osd,OSD_OUTLINE_OFFSET );
   xosd_set_colour(osd, OSD_COLOUR);
   xosd_display(osd,0,XOSD_string,text);
   nanosleep(&ts,NULL);
