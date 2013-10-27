@@ -95,7 +95,7 @@ void send_button(int button) {
 }
 
 void osd_init() {
-  osd = xosd_create(2);
+  osd = xosd_create(1);
   if (osd == NULL)
   {
     perror ("Could not create \"osd\"");
