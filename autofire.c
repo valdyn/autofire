@@ -17,8 +17,8 @@
 #include <X11/extensions/XTest.h>
 #include <xosd.h>
 
-/* Display Time in nanoseconds */
-#define OSD_TIMEOUT (BILLION/2)    
+/* Display Time in seconds */
+#define OSD_TIMEOUT (1)    
 /* Key repeat delay in nanoseconds */
 #define KEY_DELAY (BILLION/50)
 #define BILLION 1000000000
@@ -28,14 +28,15 @@
 
 Display *display;
 XDevice *xdevice = NULL;
+xosd* osd = NULL;
 
 int get_xdevice (char* name);
 int get_key_state (int keycode);
 int get_toggle();
 void send_key(int keycode);
 void send_button(int button);
-xosd *osd_init();
-
+void osd_init();
+void osd_print(char* text);
 int get_xdevice (char* name)
 {
   // get the Xdevice by name (as set in xorg.conf)
@@ -56,6 +57,7 @@ int get_xdevice (char* name)
         {
           printf("Opening XID %d \"%s\"\n", (int) devs[i].id, devs[i].name);
 		  xdevice = XOpenDevice(display, devs[i].id);
+		  free(devs);
 		  return 1;
         }
     }
@@ -67,16 +69,17 @@ int get_key_state (int keycode) {
 
   // returns: 0 -> not pressed, 1 -> pressed
 
-  XKeyState *keystate = NULL;
-
+  XDeviceState *devicestate = NULL;
   int state = 1;
   int byte = keycode / 8;
   int bit = keycode % 8;
 
   state = state << bit;
-  keystate = ((XKeyState*) (XQueryDeviceState(display, xdevice))->data);
- 
-  return (keystate->keys[byte] & state) >> bit;
+  devicestate = XQueryDeviceState(display, xdevice);
+  
+  int retval = (((XKeyState *) (devicestate->data))->keys[byte] & state) >> bit;
+  free (devicestate); 
+  return retval;
 }
 
 void send_key(int keycode) {
@@ -91,9 +94,7 @@ void send_button(int button) {
   XFlush(display);
 }
 
-void *osd_print(char* text) {
-  static struct timespec ts = { OSD_TIMEOUT / BILLION, OSD_TIMEOUT % BILLION };
-  xosd *osd = NULL;
+void osd_init() {
   osd = xosd_create(2);
   if (osd == NULL)
   {
@@ -105,9 +106,11 @@ void *osd_print(char* text) {
   xosd_set_font(osd,OSD_FONT);
   xosd_set_outline_offset(osd,OSD_OUTLINE_OFFSET );
   xosd_set_colour(osd, OSD_COLOUR);
+  xosd_set_timeout(osd,OSD_TIMEOUT);
+}
+
+void osd_print(char* text) {
   xosd_display(osd,0,XOSD_string,text);
-  nanosleep(&ts,NULL);
-  xosd_destroy(osd);
 }
 
 int get_toggle() {
@@ -161,6 +164,8 @@ int main (int argc, char *argv[])
   int keycode_4 = XKeysymToKeycode(display, XStringToKeysym("4"));
 
   static struct timespec key_delay = { 0, KEY_DELAY };
+
+  osd_init();
 
   if (get_xdevice(name))
     {
