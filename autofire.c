@@ -37,6 +37,7 @@ void send_key(int keycode);
 void send_button(int button);
 void osd_init();
 void osd_print(char* text);
+
 int get_xdevice (char* name)
 {
   // get the Xdevice by name (as set in xorg.conf)
@@ -176,12 +177,12 @@ int main (int argc, char *argv[])
           nanosleep(&key_delay,NULL);
           if (get_key_state(keycode_1)) {
             send_key(keycode_1);
-            send_button(3);
+//            send_button(3);
           }
-          if (get_key_state(keycode_2)) { 
+//          if (get_key_state(keycode_2)) { 
             send_key(keycode_2);
-			send_button(3);
-          }
+//			send_button(3);
+//          }
           if (get_key_state(keycode_3)) {
 			send_key(keycode_3);
 //          send_button(0);
